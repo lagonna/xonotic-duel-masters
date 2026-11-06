@@ -1,0 +1,27 @@
+# If mod_php is present, disable php engine here
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+# Remove PHP handler and explicitly prevent execution
+<FilesMatch "\.(php|phtml|phar)$">
+    Require all denied
+    # remove any handler so the file is not passed to PHP
+    <IfModule mod_mime.c>
+        RemoveHandler .php .phtml .phar
+    </IfModule>
+    SetHandler None
+</FilesMatch>
+
+# Prevent executing CGI
+Options -ExecCGI
+
+# Prevent browsers from mime-sniffing content (reduce risk)
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Deny access to dotfiles (like .htaccess uploaded wrongly)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
